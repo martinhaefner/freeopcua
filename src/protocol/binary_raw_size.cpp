@@ -119,6 +119,12 @@ std::size_t RawSize<DateTime>(const DateTime & date)
 }
 
 template<>
+std::size_t RawSize<TimeZoneDataType>(const TimeZoneDataType & data)
+{
+  return RawSize(data.Offset + data.DaylightSavingInOffset);
+}
+
+template<>
 std::size_t RawSize<std::vector<uint8_t>>(const std::vector<uint8_t> & vec)
 {
   const std::size_t headerSize = 4;

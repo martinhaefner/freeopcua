@@ -67,6 +67,7 @@ std::ostream & ToStream(std::ostream & os, const std::string & value, int indent
 std::ostream & ToStream(std::ostream & os, const std::vector<QualifiedName> & value);
 std::ostream & ToStream(std::ostream & os, const ReadValueId & value, int indentLevel = 0);
 std::ostream & ToStream(std::ostream & os, const SimpleAttributeOperand & value, int indentLevel = 0);
+std::ostream & ToStream(std::ostream & os, const TimeZoneDataType & value, int indentLevel = 0);
 
 template <typename T>
 std::ostream & ToStream(std::ostream & os, const std::vector<T> & value, int indentLevel = 0)
@@ -141,6 +142,11 @@ inline std::ostream & operator<<(std::ostream & os, const OpcUa::DateTime & valu
 {
   os << OpcUa::ToString(value);
   return os;
+}
+
+inline std::ostream & operator<<(std::ostream & os, const OpcUa::TimeZoneDataType & value)
+{
+  return OpcUa::ToStream(os, value);
 }
 
 inline std::ostream & operator<<(std::ostream & os, const OpcUa::DeadbandType & value)

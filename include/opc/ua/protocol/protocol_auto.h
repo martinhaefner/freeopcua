@@ -25,11 +25,7 @@ namespace OpcUa
 {
 
 // An XML element encoded as a UTF-8 string.
-struct XmlElement
-{
-  int32_t Length;
-  std::vector<uint8_t> Value;
-};
+
 
 /* DISABLED
 

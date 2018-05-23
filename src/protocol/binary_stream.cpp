@@ -479,6 +479,31 @@ void DataDeserializer::Deserialize<std::string>(std::string & value)
   */
 }
 
+template<>
+void DataDeserializer::Deserialize<OpcUa::XmlElement>(OpcUa::XmlElement & data)
+{
+  uint32_t stringSize = 0;
+  *this >> stringSize;
+
+  if (stringSize != ~uint32_t())
+    {
+      data.Length = stringSize;
+      data.Value.resize(stringSize);
+      GetData(In, (char*)&data.Value[0], stringSize);
+      return;
+    }
+
+  data.Length = 0;
+  data.Value.clear();
+  return;
+}
+
+
+template<>
+void DataDeserializer::Deserialize<OpcUa::Range>(OpcUa::Range & data)
+{
+  *this >> data.Low >> data.High;
+}
 
 template<>
 void DataSerializer::Serialize<OpcUa::DateTime>(const OpcUa::DateTime & date)
@@ -515,6 +540,24 @@ void DataSerializer::Serialize<ByteString>(const ByteString & value)
 
   Serialize(static_cast<uint32_t>(value.Data.size()));
   Buffer.insert(Buffer.end(), value.Data.begin(), value.Data.end());
+}
+template<>
+void DataSerializer::Serialize<XmlElement>(const XmlElement & value)
+{
+  if (value.Length == 0)
+    {
+      Serialize(~uint32_t());
+      return;
+    }
+
+  Serialize(static_cast<uint32_t>(value.Length));
+  Buffer.insert(Buffer.end(), value.Value.begin(), value.Value.end());
+}
+
+template<>
+void DataSerializer::Serialize<Range>(const Range & value)
+{
+  *this << value.Low << value.High;
 }
 
 template<>

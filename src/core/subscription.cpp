@@ -194,7 +194,8 @@ void Subscription::CallEventCallback(const NotificationData & data)
 
                   else if (name == QualifiedName("LocalTime", 0))
                     {
-                      ev.LocalTime = value.As<DateTime>();
+                        // TODO this is an extension object!
+                        //value.As<TimeZoneDataType>();
                     }
 
                   else if (name == QualifiedName("ReceiveTime", 0))

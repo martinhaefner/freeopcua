@@ -436,6 +436,15 @@ struct VariantPrinter
     std::cout << "!!!TODO!!!";
   }
 
+  void PrintValue(const OpcUa::XmlElement & info)
+  {
+    std::cout << "!!!TODO XmlElement!!!";
+  }
+
+  void PrintValue(const OpcUa::Range & info)
+  {
+    std::cout << "!!!TODO Range!!!";
+  }
   void PrintValue(const OpcUa::LocalizedText & text)
   {
     std::cout << text.Text << std::endl;

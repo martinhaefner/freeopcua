@@ -338,6 +338,11 @@ UaClient::~UaClient()
   Disconnect();//Do not leave any thread or connection running
 }
 
+bool UaClient::IsConnected() const
+{
+    return Server.get() != nullptr;
+}
+
 void UaClient::Disconnect()
 {
   KeepAlive.Stop();

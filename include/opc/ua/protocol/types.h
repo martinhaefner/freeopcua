@@ -32,6 +32,12 @@ namespace OpcUa
 
 typedef std::string LocaleId;
 
+struct TimeZoneDataType
+{
+     int16_t Offset;
+     bool DaylightSavingInOffset;
+};
+
 struct ByteString
 {
   std::vector<uint8_t> Data;
@@ -109,6 +115,28 @@ struct QualifiedName
       }
 
     return Name < name.Name;
+  }
+};
+struct XmlElement
+{
+  int32_t Length;
+  std::vector<uint8_t> Value;
+
+  bool operator== (const XmlElement & elem) const
+  {
+    return Length == elem.Length && Value == elem.Value;
+  }
+};
+
+
+struct Range
+{
+  double Low;
+  double High;
+
+  bool operator== (const Range & r) const
+  {
+    return Low == r.Low && High == r.High;
   }
 };
 

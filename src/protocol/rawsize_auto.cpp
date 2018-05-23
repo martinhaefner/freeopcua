@@ -4307,7 +4307,6 @@ std::size_t RawSize<DeleteSubscriptionsResponse>(const DeleteSubscriptionsRespon
 
 */
 
-/* DISABLED
 
     template<>
     std::size_t RawSize<Range>(const Range& data)
@@ -4318,7 +4317,6 @@ std::size_t RawSize<DeleteSubscriptionsResponse>(const DeleteSubscriptionsRespon
         return size;
     }
 
-*/
 
 /* DISABLED
 

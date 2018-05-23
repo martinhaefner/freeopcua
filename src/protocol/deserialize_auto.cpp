@@ -237,14 +237,14 @@ void DataDeserializer::Deserialize<ExceptionDeviationFormat>(ExceptionDeviationF
   data = static_cast<ExceptionDeviationFormat>(tmp);
 }
 
-
+/*
 template<>
 void DataDeserializer::Deserialize<XmlElement>(XmlElement & data)
 {
   *this >> data.Length;
   DeserializeContainer(*this, data.Value);
 }
-
+*/
 
 /*  DISABLED
 

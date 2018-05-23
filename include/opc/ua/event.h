@@ -35,7 +35,7 @@ public:
   //Attributes of an BaseEventType
   ByteString EventId;     //unique id
   NodeId EventType;       //The type of event, defines attribues, connections, ...
-  DateTime LocalTime;     //Time zone information
+  TimeZoneDataType LocalTime;     //Time zone information
   DateTime ReceiveTime;   //Time at which the server received the event
   DateTime Time;          //Time at which the event occured, should come from underlying system
   LocalizedText Message;  //human readable event description

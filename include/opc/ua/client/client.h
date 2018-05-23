@@ -99,6 +99,9 @@ public:
   // close communication with OPC-UA server, close all threads and subscriptions
   void Disconnect();
 
+  /// @brief Check if client is connected to server
+  bool IsConnected() const;
+
   /// @brief Abort server connection
   // abort communication with OPC-UA server, close all threads and subcsriptions
   // Like Disconnect() but without CloseSession() call, which is not possible on faulty connection anyway

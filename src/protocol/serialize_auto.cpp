@@ -190,12 +190,12 @@ void DataSerializer::Serialize<ExceptionDeviationFormat>(const ExceptionDeviatio
 }
 
 
-template<>
+/*template<>
 void DataSerializer::Serialize<XmlElement>(const XmlElement & data)
 {
   *this << data.Length;
   SerializeContainer(*this, data.Value);
-}
+}*/
 
 
 /*  DISABLED

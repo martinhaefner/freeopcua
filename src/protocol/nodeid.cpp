@@ -683,6 +683,12 @@ std::size_t RawSize<NodeId>(const NodeId & id)
 }
 
 template<>
+void DataSerializer::Serialize<OpcUa::TimeZoneDataType>(const OpcUa::TimeZoneDataType & id)
+{
+    // FIXME
+}
+
+template<>
 void DataSerializer::Serialize<OpcUa::NodeId>(const OpcUa::NodeId & id)
 {
   //unset server and namespace flags in encoding, they should only be used in ExpandedNode Id

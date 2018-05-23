@@ -52,6 +52,8 @@ enum class VariantType : uint8_t
   DATA_VALUE       = 23,
   VARIANT          = 24,
   DIAGNOSTIC_INFO  = 25,
+  TIMEZONEDATATYPE = 26,
+  RANGE            = 27
 };
 
 const uint8_t VALUE_TYPE_MASK = 0x3F;
@@ -152,6 +154,12 @@ public:
   virtual void Visit(const std::vector<Variant> & val) = 0;
   virtual void Visit(const DiagnosticInfo & val) = 0;
   virtual void Visit(const std::vector<DiagnosticInfo> & val) = 0;
+  virtual void Visit(const TimeZoneDataType & val) = 0;
+  virtual void Visit(const std::vector<TimeZoneDataType> & val) = 0;
+  virtual void Visit(const XmlElement& val) = 0;
+  virtual void Visit(const std::vector<XmlElement> & val) = 0;
+  virtual void Visit(const Range& val) = 0;
+  virtual void Visit(const std::vector<Range> & val) = 0;
 };
 
 

@@ -352,6 +352,24 @@ std::ostream & OpcUa::ToStream(std::ostream & os, const OpcUa::AggregateFilter &
   return os;
 }
 
+std::ostream & OpcUa::ToStream(std::ostream & os, const OpcUa::TimeZoneDataType & value, int indentLevel)
+{
+  os << "TimeZoneDataType(";
+  int subIndentLevel = (indentLevel < 0)
+    ? indentLevel
+    : indentLevel + 1;
+
+  indent(os, subIndentLevel, true);
+  os << "Offset: " << value.Offset;
+
+  indent(os, subIndentLevel);
+  os << "DaylightSavingInOffset: " << std::boolalpha << value.DaylightSavingInOffset << std::noboolalpha;
+
+  indent(os, subIndentLevel, true);
+  os << ")";
+  return os;
+}
+
 std::ostream & OpcUa::ToStream(std::ostream & os, const OpcUa::ContentFilterElement & value, int indentLevel)
 {
   os << "ContentFilterElement(";

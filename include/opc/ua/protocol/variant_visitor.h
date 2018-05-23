@@ -72,6 +72,12 @@ public:
   virtual void Visit(const std::vector<Variant> & val) { Impl.OnContainer(val); }
   virtual void Visit(const DiagnosticInfo & val) { Impl.OnScalar(val); }
   virtual void Visit(const std::vector<DiagnosticInfo> & val) { Impl.OnContainer(val); }
+  virtual void Visit(const TimeZoneDataType & val) { Impl.OnScalar(val); }
+  virtual void Visit(const std::vector<TimeZoneDataType> & val) { Impl.OnContainer(val); }
+  virtual void Visit(const XmlElement & val) { Impl.OnScalar(val); }
+  virtual void Visit(const std::vector<XmlElement> & val) { Impl.OnContainer(val); }
+  virtual void Visit(const Range & val) { Impl.OnScalar(val); }
+  virtual void Visit(const std::vector<Range> & val) { Impl.OnContainer(val); }
 
 private:
   Delegate & Impl;

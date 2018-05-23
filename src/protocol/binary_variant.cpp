@@ -347,6 +347,17 @@ bool Variant::operator== (const Variant & var) const
   else if (t == typeid(std::vector<DiagnosticInfo>))
     { return Compare<std::vector<DiagnosticInfo>>(*this, var); }
 
+  else if (t == typeid(XmlElement))
+    { return Compare<XmlElement>(*this, var); }
+
+  else if (t == typeid(std::vector<XmlElement>))
+    { return Compare<std::vector<XmlElement>>(*this, var); }
+
+  else if (t == typeid(Range))
+    { return Compare<Range>(*this, var); }
+
+  else if (t == typeid(std::vector<Range>))
+    { return Compare<std::vector<Range>>(*this, var); }
   throw std::logic_error(std::string("Unknown variant type '") + t.name() + std::string("'."));
 }
 
@@ -461,6 +472,14 @@ VariantType Variant::Type() const
 
   else if (t == typeid(DiagnosticInfo) || t == typeid(std::vector<DiagnosticInfo>))
     { return VariantType::DIAGNOSTIC_INFO; }
+  else if (t == typeid(Variant) || t == typeid(std::vector<ExtensionObject>))
+    { return VariantType::EXTENSION_OBJECT; }
+
+  else if (t == typeid(XmlElement) || t == typeid(std::vector<XmlElement>))
+    { return VariantType::XML_ELEMENT; }
+
+  else if (t == typeid(Range) || t == typeid(std::vector<Range>))
+    { return VariantType::RANGE; }
 
   throw std::runtime_error(std::string("Unknown variant type '") + t.name() + "'.");
 }
@@ -602,9 +621,23 @@ void Variant::Visit(VariantVisitor & visitor) const
 
   else if (t == typeid(std::vector<DiagnosticInfo>))
     { visitor.Visit(any_cast<std::vector<DiagnosticInfo>>(Value)); }
+  else if (t == typeid(ExtensionObject))
+    { visitor.Visit(any_cast<ExtensionObject>(Value)); }
+  else if (t == typeid(std::vector<ExtensionObject>))
+    { visitor.Visit(any_cast<std::vector<ExtensionObject>>(Value)); }
+
+  else if (t == typeid(XmlElement))
+    { visitor.Visit(any_cast<XmlElement>(Value)); }
+  else if (t == typeid(std::vector<XmlElement>))
+    { visitor.Visit(any_cast<std::vector<XmlElement>>(Value)); }
+
+  else if (t == typeid(Range))
+    { visitor.Visit(any_cast<Range>(Value)); }
+  else if (t == typeid(std::vector<Range>))
+    { visitor.Visit(any_cast<std::vector<Range>>(Value)); }
 
   else
-    { throw std::runtime_error(std::string("Unknown variant type '") + t.name() + "'."); }
+    { throw std::runtime_error(std::string("Unknown variant type '") + t.name() + std::string("'. ") + std::string(typeid(std::vector<ExtensionObject>).name())); }
 }
 
 ObjectId VariantTypeToDataType(VariantType vt)
@@ -658,6 +691,9 @@ ObjectId VariantTypeToDataType(VariantType vt)
 
     case VariantType::XML_ELEMENT:
       return ObjectId::XmlElement;
+
+    case VariantType::RANGE:
+      return ObjectId::Range;
 
     case VariantType::NODE_Id:
       return ObjectId::NodeId;
@@ -1068,6 +1104,18 @@ void DataDeserializer::Deserialize<Variant>(Variant & var)
 
   else if (encodingMask == ((uint8_t)VariantType::EXTENSION_OBJECT | HAS_ARRAY_MASK))
     { var = deserializer.get<std::vector<ExtensionObject>>(); }
+
+  else if (encodingMask == ((uint8_t)VariantType::XML_ELEMENT))
+    { var = deserializer.get<XmlElement>(); }
+
+  else if (encodingMask == ((uint8_t)VariantType::XML_ELEMENT | HAS_ARRAY_MASK))
+    { var = deserializer.get<std::vector<XmlElement>>(); }
+
+  else if (encodingMask == ((uint8_t)VariantType::RANGE))
+    { var = deserializer.get<Range>(); }
+
+  else if (encodingMask == ((uint8_t)VariantType::RANGE | HAS_ARRAY_MASK))
+    { var = deserializer.get<std::vector<Range>>(); }
 
   else
     { throw std::logic_error("Deserialization of VariantType: " + std::to_string(encodingMask) + " is not supported yet."); }
