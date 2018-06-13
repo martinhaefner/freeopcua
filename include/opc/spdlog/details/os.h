@@ -29,7 +29,7 @@
 #endif
 #include <windows.h>
 #include <process.h> //  _get_pid support
-#include <io.h> // _get_osfhandle and _isatty support
+#include <cabio.h> // _get_osfhandle and _isatty support
 
 #ifdef __MINGW32__
 #include <share.h>

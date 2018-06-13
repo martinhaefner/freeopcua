@@ -1,3 +1,12 @@
+# Build under win32 with:
+#
+# cmake ..                                    \
+#    -DBOOST_ROOT=c:\local\boost_1_67_0       \
+#    -DBOOST_INCLUDEDIR=c:\local\boost_1_67_0 \
+#    -DBOOST_LIBRARYDIR=c:\local\boost_1_67_0\lib64-msvc-14.1
+# cmake --build .
+# 
+
 cmake_minimum_required(VERSION 2.8)
 
 #It seems Cmake does not set default bild type so we force it
@@ -7,14 +16,24 @@ endif()
 
 project(freeopcua)
 
+if(WIN32)
+    set(Boost_DEFAILED_FAILURE_MSG ON)
+    set(Boost_NO_SYSTEM_PATHS ON)
+    set(Boost_THREADAPI win32)
+    set(Boost_COMPILER "-vc141")
+    set(Boost_USE_STATIC_RUNTIME OFF)
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_DEBUG ON)
+endif()
+
 option(BUILD_CLIENT "Build Client" ON)
-option(BUILD_SERVER "Build Server" ON)
+option(BUILD_SERVER "Build Server" OFF)
 
-option(SSL_SUPPORT_MBEDTLS "Support rsa-oaep password encryption using mbedtls library " ON)
+option(SSL_SUPPORT_MBEDTLS "Support rsa-oaep password encryption using mbedtls library " OFF)
 
-option(BUILD_PYTHON "Build Python bindings" ON)
+option(BUILD_PYTHON "Build Python bindings" OFF)
 option(BUILD_TESTING "Build and run tests" OFF)
-OPTION(BUILD_SHARED_LIBS "Build shared libraries." ON)
+OPTION(BUILD_SHARED_LIBS "Build shared libraries." OFF)
 
 IF (NOT DEFINED CMAKE_INSTALL_LIBDIR)
     SET(CMAKE_INSTALL_LIBDIR lib)
@@ -80,7 +99,7 @@ else(MSVC)
 endif()
 
 if(WIN32)
-    SET(gtest_force_shared_crt "Use shared (DLL) run-time lib even when Google Test is built as static lib." ON)
+    SET(gtest_force_shared_crt "Use shared (DLL) run-time lib even when Google Test is built as static lib." OFF)
     SET(ADDITIONAL_LINK_LIBRARIES Wininet.lib wsock32.lib)
     if(CMAKE_COMPILER_IS_GNUCC)
         SET(ADDITIONAL_LINK_LIBRARIES ${ADDITIONAL_LINK_LIBRARIES} ws2_32.lib)
@@ -270,7 +289,10 @@ if (NOT CMAKE_VERSION VERSION_LESS 2.8.12)
     target_compile_options(opcuacore PUBLIC ${STATIC_LIBRARY_CXX_FLAGS})
 endif ()
 
+if (NOT WIN32)
 target_link_libraries(opcuacore ${ADDITIONAL_LINK_LIBRARIES} opcuaprotocol ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+endif()
+
 target_include_directories(opcuacore PUBLIC $<INSTALL_INTERFACE:include>)
 install(TARGETS opcuacore EXPORT FreeOpcUa
                           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -330,11 +352,13 @@ if (BUILD_CLIENT)
     if (NOT CMAKE_VERSION VERSION_LESS 2.8.12)
         target_compile_options(opcuaclient PUBLIC ${STATIC_LIBRARY_CXX_FLAGS})
     endif ()
+if (NOT WIN32)
     target_link_libraries(opcuaclient
         opcuacore
         ${ADDITIONAL_LINK_LIBRARIES}
         ${Boost_PROGRAMOPTIONS_LIBRARY}
         )
+endif()
 
     target_include_directories(opcuaclient PUBLIC $<INSTALL_INTERFACE:include>)
     install(TARGETS opcuaclient EXPORT FreeOpcUa
@@ -426,7 +450,9 @@ if(BUILD_SERVER)
     if (NOT CMAKE_VERSION VERSION_LESS 2.8.12)
         target_compile_options(opcuaserver PUBLIC ${STATIC_LIBRARY_CXX_FLAGS})
     endif ()
+if (NOT WIN32)
     target_link_libraries(opcuaserver ${ADDITIONAL_LINK_LIBRARIES} opcuacore opcuaprotocol ${Boost_SYSTEM_LIBRARY})
+endif()
     target_include_directories(opcuaserver PUBLIC $<INSTALL_INTERFACE:include>)
     install(TARGETS opcuaserver EXPORT FreeOpcUa
                                 LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
