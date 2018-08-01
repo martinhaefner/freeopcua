@@ -1030,9 +1030,9 @@ private:
 
     Binary::Hello hello;
     hello.ProtocolVersion = 0;
-    hello.ReceiveBufferSize = 65536;
-    hello.SendBufferSize = 65536;
-    hello.MaxMessageSize = 65536;
+    hello.ReceiveBufferSize = 524228;
+    hello.SendBufferSize = 524228;
+    hello.MaxMessageSize = 524228;
     hello.MaxChunkCount = 256;
     hello.EndpointUrl = params.EndpointUrl;
 
