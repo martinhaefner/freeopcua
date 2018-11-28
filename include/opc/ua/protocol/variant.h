@@ -75,6 +75,8 @@ public:
   typedef T type;
 };
 
+#ifndef _WIN32
+
 template <typename T>
 struct has_begin_end
 {
@@ -97,6 +99,17 @@ struct has_begin_end
 template<typename T>
 struct is_container_not_string : std::integral_constant < bool, has_const_iterator<T>::value && has_begin_end<T>::beg_value && has_begin_end<T>::end_value >
 { };
+
+#else
+	
+template<typename T>
+struct is_container_not_string : std::integral_constant < bool, false> {};
+
+template<typename U>
+struct is_container_not_string<std::vector<U>> : std::integral_constant < bool, true> {};
+
+#endif
+
 
 template<>
 struct is_container_not_string<std::string> : std::integral_constant<bool, false> {};
