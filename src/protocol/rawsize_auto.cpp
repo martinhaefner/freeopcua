@@ -194,7 +194,6 @@ template<>
 std::size_t RawSize<XmlElement>(const XmlElement & data)
 {
   size_t size = 0;
-  size += RawSize(data.Length);
   size += RawSizeContainer(data.Value);
   return size;
 }
