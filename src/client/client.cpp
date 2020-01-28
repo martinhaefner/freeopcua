@@ -135,7 +135,7 @@ std::vector<EndpointDescription> UaClient::GetServerEndpoints(const std::string 
   OpcUa::IOChannel::SharedPtr channel = OpcUa::Connect(serverUri.Host(), serverUri.Port(), Logger);
 
   OpcUa::SecureConnectionParams params;
-  params.EndpointUrl = endpoint;
+  //params.EndpointUrl = endpoint;
   params.SecurePolicy = "http://opcfoundation.org/UA/SecurityPolicy#None";
 
   Server = OpcUa::CreateBinaryClient(channel, params, Logger);

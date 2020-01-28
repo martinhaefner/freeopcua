@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <vector>
+#include <cstring>
 
 #define OPCUA_DEFAULT_BUFFER_SIZE 4096
 
@@ -51,7 +52,14 @@ public:
   template<typename T>
   void Serialize(const T & value);
 
-private:
+  void raw_write(const char* buf, size_t len)
+  {
+      size_t orig = Buffer.size();
+      Buffer.resize(orig + len);
+      memcpy(&Buffer[orig], buf, len);
+  }
+
+//private:
   std::vector<char> Buffer;
 };
 
@@ -135,6 +143,11 @@ public:
   void Flush()
   {
     Serializer.Flush(Out);
+  }
+
+  void raw_write(const char* buf, size_t len)
+  {
+      Serializer.raw_write(buf, len);
   }
 
 private:

@@ -900,18 +900,38 @@ private:
   template <typename Request>
   void Send(Request request) const
   {
-    // TODO add support for breaking message into multiple chunks
-    SecureHeader hdr(MT_SECURE_MESSAGE, CHT_SINGLE, ChannelSecurityToken.SecureChannelId);
-    const SymmetricAlgorithmHeader algorithmHeader = CreateAlgorithmHeader();
-    hdr.AddSize(RawSize(algorithmHeader));
+    DataSerializer s;
+    s << request;
+
+    size_t total = RawSize(request);
+    size_t rest = total;
 
     std::unique_lock<std::mutex> send_lock(send_mutex);
 
-    const SequenceHeader sequence = CreateSequenceHeader();
-    hdr.AddSize(RawSize(sequence));
-    hdr.AddSize(RawSize(request));
+    SequenceHeader sequence = CreateSequenceHeader();
 
-    Stream << hdr << algorithmHeader << sequence << request << flush;
+    do
+    {
+        SecureHeader hdr(MT_SECURE_MESSAGE, total <= 65000 ? CHT_SINGLE : rest <= 65000 ? CHT_SINGLE : CHT_INTERMEDIATE, ChannelSecurityToken.SecureChannelId);
+
+        size_t this_time = rest > 65000 ? 65000 : rest;
+
+        const SymmetricAlgorithmHeader algorithmHeader = CreateAlgorithmHeader();
+        hdr.AddSize(RawSize(algorithmHeader));
+
+        hdr.AddSize(RawSize(sequence));
+        hdr.AddSize(this_time);
+
+        Stream << hdr << algorithmHeader << sequence;
+        Stream.raw_write(&s.Buffer[total - rest], this_time);
+        Stream << flush;
+
+        rest -= this_time;
+
+        if (rest > 0)
+            sequence.SequenceNumber = ++SequenceNumber;
+    }
+    while(rest > 0);
   }
 
 
@@ -1030,10 +1050,10 @@ private:
 
     Binary::Hello hello;
     hello.ProtocolVersion = 0;
-    hello.ReceiveBufferSize = 524228;
-    hello.SendBufferSize = 524228;
-    hello.MaxMessageSize = 524228;
-    hello.MaxChunkCount = 256;
+    hello.ReceiveBufferSize = 65536;
+    hello.SendBufferSize = 65536;
+    hello.MaxMessageSize = 0;
+    hello.MaxChunkCount = 0;
     hello.EndpointUrl = params.EndpointUrl;
 
     Binary::Header hdr(Binary::MT_HELLO, Binary::CHT_SINGLE);
