@@ -411,7 +411,6 @@ struct ExtensionObject
     };
 */
 
-/* DISABLED
 
     // An argument for a method.
     struct Argument
@@ -422,7 +421,7 @@ struct ExtensionObject
          std::vector<uint32_t> ArrayDimensions;
          OpcUa::LocalizedText Description;
     };
-*/
+
 
 /* DISABLED
 

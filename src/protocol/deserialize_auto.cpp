@@ -668,7 +668,6 @@ void DataDeserializer::Deserialize<ExtensionObject>(ExtensionObject & data)
 
 */
 
-/*  DISABLED
 
     template<>
     void DataDeserializer::Deserialize<Argument>(Argument& data)
@@ -680,7 +679,6 @@ void DataDeserializer::Deserialize<ExtensionObject>(ExtensionObject & data)
         *this >> data.Description;
     }
 
-*/
 
 /*  DISABLED
 
