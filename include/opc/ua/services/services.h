@@ -51,6 +51,7 @@ public:
   virtual CloseSessionResponse CloseSession() = 0;
   virtual void AbortSession() = 0;
   virtual DeleteNodesResponse DeleteNodes(const std::vector<OpcUa::DeleteNodesItem> & nodesToDelete) = 0;
+  virtual bool IsOk() const { return true; }
 
   virtual AttributeServices::SharedPtr Attributes() = 0;
   virtual EndpointServices::SharedPtr Endpoints() = 0;

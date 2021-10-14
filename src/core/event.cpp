@@ -57,7 +57,7 @@ Variant Event::GetValue(const QualifiedName & path) const
 Variant Event::GetValue(const std::vector<QualifiedName> & path) const
 {
   PathMap::const_iterator it = PathValues.find(path);
-  std::cout << "Looking for Event value: ";
+  //std::cout << "Looking for Event value: ";
 
   for (auto qn : path)
     {
@@ -68,13 +68,13 @@ Variant Event::GetValue(const std::vector<QualifiedName> & path) const
 
   if (it == PathValues.end())
     {
-      std::cout << "Bad Not found " << std::endl;
+      //std::cout << "Bad Not found " << std::endl;
       return Variant();
     }
 
   else
     {
-      std::cout << "ok" << std::endl;
+      //std::cout << "ok" << std::endl;
       return it->second;
     }
 }

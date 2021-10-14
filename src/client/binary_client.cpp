@@ -77,14 +77,27 @@ private:
 };
 
 
+class RequestCallbackBase
+{
+public:
+    virtual ~RequestCallbackBase() {}
+    virtual void notify_all() = 0;
+};
+
+
 template <typename T>
-class RequestCallback
+class RequestCallback : public RequestCallbackBase
 {
 public:
   RequestCallback(const Common::Logger::SharedPtr & logger)
     : Logger(logger)
     , lock(m)
   {
+  }
+
+  void notify_all()
+  {
+      doneEvent.notify_all();
   }
 
   void OnData(std::vector<char> data, ResponseHeader h)
@@ -222,6 +235,8 @@ public:
     , CallbackService(logger)
 
   {
+    DisconnectOccurred.store(false);
+
     //Initialize the worker thread for subscriptions
     callback_thread = std::thread([&]() { CallbackService.Run(); });
 
@@ -238,6 +253,11 @@ public:
       catch (const std::exception & exc)
         {
           if (Finished) { return; }
+
+          if (CurrentRequest)
+             CurrentRequest->notify_all();
+
+          DisconnectOccurred.store(true);
 
           LOG_ERROR(Logger, "binary_client         | ReceiveThread: error receiving data: {}", exc.what());
         }
@@ -263,6 +283,11 @@ public:
     ReceiveThread.join();
 
     LOG_DEBUG(Logger, "binary_client         | receive thread stopped");
+  }
+
+  bool IsOk() const override
+  {
+      return !DisconnectOccurred.load();
   }
 
   ////////////////////////////////////////////////////////////////
@@ -860,9 +885,13 @@ private:
   template <typename Response, typename Request>
   Response Send(Request request) const
   {
+    if (DisconnectOccurred.load())
+       return Response();
+
     request.Header = CreateRequestHeader();
 
     RequestCallback<Response> requestCallback(Logger);
+
     ResponseCallback responseCallback = [&requestCallback](std::vector<char> buffer, ResponseHeader h)
     {
       requestCallback.OnData(std::move(buffer), std::move(h));
@@ -873,17 +902,31 @@ private:
 
     LOG_DEBUG(Logger, "binary_client         | send: id: {} handle: {}, UtcTime: {}", ToString(request.TypeId, true), request.Header.RequestHandle, request.Header.UtcTime);
 
+    CurrentRequest = &requestCallback;
+    __sync_synchronize();
+
     Send(request);
 
     Response res;
 
     try
       {
+        if (DisconnectOccurred.load())
+        {
+            CurrentRequest = nullptr;
+            return Response();
+        }
+
         res = requestCallback.WaitForData(std::chrono::milliseconds(request.Header.Timeout));
+        CurrentRequest = nullptr;
+        __sync_synchronize();
       }
 
     catch (std::exception & ex)
       {
+        CurrentRequest = nullptr;
+        __sync_synchronize();
+
         //Remove the callback on timeout
         std::unique_lock<std::mutex> lock(Mutex);
         Callbacks.erase(request.Header.RequestHandle);
@@ -1134,6 +1177,9 @@ private:
 
   bool firstMsgParsed = false;
   ResponseHeader header;
+
+  std::atomic_bool DisconnectOccurred;
+  mutable RequestCallbackBase* CurrentRequest = nullptr;
 };
 
 template <>
