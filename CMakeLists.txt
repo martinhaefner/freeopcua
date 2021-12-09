@@ -5,7 +5,7 @@
 #    -DBOOST_INCLUDEDIR=c:\local\boost_1_67_0 \
 #    -DBOOST_LIBRARYDIR=c:\local\boost_1_67_0\lib64-msvc-14.1
 # cmake --build .
-# 
+#
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -29,7 +29,7 @@ endif()
 option(BUILD_CLIENT "Build Client" ON)
 option(BUILD_SERVER "Build Server" OFF)
 
-option(SSL_SUPPORT_MBEDTLS "Support rsa-oaep password encryption using mbedtls library " OFF)
+option(SSL_SUPPORT_MBEDTLS "Support rsa-oaep password encryption using mbedtls library " ON)
 
 option(BUILD_PYTHON "Build Python bindings" OFF)
 option(BUILD_TESTING "Build and run tests" OFF)
@@ -357,6 +357,7 @@ if (NOT WIN32)
         opcuacore
         ${ADDITIONAL_LINK_LIBRARIES}
         ${Boost_PROGRAMOPTIONS_LIBRARY}
+        ${SSL_SUPPORT_LINK_LIBRARIES}
         )
 endif()
 
