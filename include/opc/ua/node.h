@@ -48,6 +48,8 @@ public:
   Node(const Node & other);
   Node() {}
 
+  Node& operator=(const Node & other);
+
   NodeId GetId() const;
 
   QualifiedName GetBrowseName() const;

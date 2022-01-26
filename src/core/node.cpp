@@ -47,6 +47,19 @@ Node::Node(const Node & other)
 {
 }
 
+
+Node& Node::operator=(const Node & other)
+{
+    if (&other != this)
+    {
+        Server = other.Server;
+        Id = other.Id;
+    }
+
+    return *this;
+}
+
+
 NodeId Node::GetId() const
 {
   return Id;
