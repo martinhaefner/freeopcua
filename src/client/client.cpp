@@ -284,7 +284,7 @@ void UaClient::Connect(const EndpointDescription & endpoint)
 
                         if(token.SecurityPolicyUri != "http://opcfoundation.org/UA/SecurityPolicy#None")
                         {
-                            EncryptPassword(sessionParameters.UserIdentityToken, createSessionResponse);
+                            EncryptPassword(sessionParameters.UserIdentityToken, token.SecurityPolicyUri, createSessionResponse);
                         }
 
                         user_identify_token_found = true;
@@ -493,7 +493,7 @@ ServerOperations UaClient::CreateServerOperations()
   return ServerOperations(Server);
 }
 
-void UaClient::EncryptPassword(OpcUa::UserIdentifyToken &identity, const CreateSessionResponse &response)
+void UaClient::EncryptPassword(OpcUa::UserIdentifyToken &identity, const std::string& policyUri, const CreateSessionResponse &response)
 {
   if(response.Parameters.ServerCertificate.Data.empty() || response.Parameters.ServerNonce.Data.empty()) {
     // server response does not contain information needed to encrypt password
@@ -549,8 +549,19 @@ void UaClient::EncryptPassword(OpcUa::UserIdentifyToken &identity, const CreateS
       }
       {
         mbedtls_rsa_context *rsa = mbedtls_pk_rsa(x509.pk);
-        rsa->padding = MBEDTLS_RSA_PKCS_V21;
-        rsa->hash_id = MBEDTLS_MD_SHA1;
+
+        if (policyUri.find("Basic128Rsa15") != std::string::npos)
+        {
+            printf("Rsa15\n");
+            rsa->padding = MBEDTLS_RSA_PKCS_V15;
+            rsa->hash_id = 0;
+        }
+        else
+        {
+            printf("OAEP\n");
+            rsa->padding = MBEDTLS_RSA_PKCS_V21;
+            rsa->hash_id = MBEDTLS_MD_SHA1;
+        }
 
         LOG_DEBUG(Logger, "ua_client             | generating the RSA encrypted value...");
 
@@ -576,7 +587,15 @@ void UaClient::EncryptPassword(OpcUa::UserIdentifyToken &identity, const CreateS
         LOG_DEBUG(Logger, "ua_client             | encrypted password: {}", hex(std::vector<unsigned char>(buff, buff + sizeof(buff))));
 
         identity.UserName.Password = std::string((const char*)buff, rsa->len);
-        identity.UserName.EncryptionAlgorithm = "http://www.w3.org/2001/04/xmlenc#rsa-oaep";
+
+        if (policyUri.find("Basic128Rsa15") != std::string::npos)
+        {
+            identity.UserName.EncryptionAlgorithm = "http://www.w3.org/2001/04/xmlenc#rsa-1_5";
+        }
+        else
+        {
+            identity.UserName.EncryptionAlgorithm = "http://www.w3.org/2001/04/xmlenc#rsa-oaep";
+        }
       }
 exit2:
       mbedtls_ctr_drbg_free( &ctr_drbg );

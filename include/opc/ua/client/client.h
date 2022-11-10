@@ -164,7 +164,7 @@ private:
   std::vector<OpcUa::Node> AddChilds(std::vector<OpcUa::Node> nodes);
 
 protected:
-  virtual void EncryptPassword(OpcUa::UserIdentifyToken &identity, const CreateSessionResponse &response);
+  virtual void EncryptPassword(OpcUa::UserIdentifyToken &identity, const std::string& policyUri, const CreateSessionResponse &response);
 protected:
   EndpointDescription Endpoint;
   // defined some sensible defaults that should let us connect to most servers
