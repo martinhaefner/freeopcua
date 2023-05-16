@@ -300,6 +300,8 @@ Node Node::GetChild(const std::vector<QualifiedName> & path) const
   params.BrowsePaths = bpaths;
 
   std::vector<BrowsePathResult> result = Server->Views()->TranslateBrowsePathsToNodeIds(params);
+  if (result.size() == 0)
+      throw std::runtime_error("result set empty");
   CheckStatusCode(result.front().Status);
 
   NodeId node = result.front().Targets.front().Node ;

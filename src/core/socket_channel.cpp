@@ -77,7 +77,7 @@ std::size_t OpcUa::SocketChannel::Receive(char * data, std::size_t size)
 
 void OpcUa::SocketChannel::Send(const char * message, std::size_t size)
 {
-  int sent = send(Socket, message, size, 0);
+  int sent = send(Socket, message, size, MSG_NOSIGNAL);
 
   if (sent != (int)size)
     {
