@@ -44,6 +44,7 @@ public:
   KeepAliveThread(const Common::Logger::SharedPtr & logger = nullptr) : StopRequest(false), Running(false), Logger(logger) {}
   void Start(Services::SharedPtr server, Node node, Duration period);
   void Stop();
+  bool IsRunning() const { return Running; }
 
   void SetLogger(const Common::Logger::SharedPtr & logger) { Logger = logger; }
 

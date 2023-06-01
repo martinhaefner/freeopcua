@@ -65,22 +65,30 @@ void KeepAliveThread::Run()
 
       LOG_DEBUG(Logger, "keep_alive_thread     | renewing secure channel");
 
-      OpenSecureChannelParameters params;
-      params.ClientProtocolVersion = 0;
-      params.RequestType = SecurityTokenRequestType::Renew;
-      params.SecurityMode = MessageSecurityMode::None;
-      params.ClientNonce = std::vector<uint8_t>(1, 0);
-      params.RequestLifeTime = Period;
-      OpenSecureChannelResponse response = Server->OpenSecureChannel(params);
+      try
+      {
+          OpenSecureChannelParameters params;
+          params.ClientProtocolVersion = 0;
+          params.RequestType = SecurityTokenRequestType::Renew;
+          params.SecurityMode = MessageSecurityMode::None;
+          params.ClientNonce = std::vector<uint8_t>(1, 0);
+          params.RequestLifeTime = Period;
 
-      if ((response.ChannelSecurityToken.RevisedLifetime < Period) && (response.ChannelSecurityToken.RevisedLifetime > 0))
-        {
-          Period = response.ChannelSecurityToken.RevisedLifetime;
-        }
+          OpenSecureChannelResponse response = Server->OpenSecureChannel(params);
 
-      LOG_DEBUG(Logger, "keep_alive_thread     | read a variable from address space to keep session open");
+          if ((response.ChannelSecurityToken.RevisedLifetime < Period) && (response.ChannelSecurityToken.RevisedLifetime > 0))
+          {
+              Period = response.ChannelSecurityToken.RevisedLifetime;
+          }
 
-      NodeToRead.GetValue();
+          LOG_DEBUG(Logger, "keep_alive_thread     | read a variable from address space to keep session open");
+
+          NodeToRead.GetValue();
+      }
+      catch(std::exception& ex)
+      {
+          break;
+      }
     }
 
   Running = false;
@@ -345,7 +353,7 @@ UaClient::~UaClient()
 
 bool UaClient::IsConnected() const
 {
-    return Server.get() != nullptr && Server->IsOk();
+    return Server.get() != nullptr && Server->IsOk() && KeepAlive.IsRunning();
 }
 
 void UaClient::Disconnect()
