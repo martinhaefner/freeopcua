@@ -7,7 +7,7 @@
 # cmake --build .
 #
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.5)
 
 #It seems Cmake does not set default bild type so we force it
 if( NOT CMAKE_BUILD_TYPE )
@@ -17,6 +17,8 @@ endif()
 project(freeopcua)
 
 if(WIN32)
+    set(BOOST_ROOT "c:/boost")
+    set(BOOST_INCLUDEDIR "c:/boost")
     set(Boost_DEFAILED_FAILURE_MSG ON)
     set(Boost_NO_SYSTEM_PATHS ON)
     set(Boost_THREADAPI win32)
@@ -124,7 +126,7 @@ else(WIN32)
 
 endif(WIN32)
 
-find_package( Boost COMPONENTS system program_options filesystem thread REQUIRED )
+find_package( Boost COMPONENTS REQUIRED )
 include_directories( ${Boost_INCLUDE_DIRS} )
 link_directories( ${Boost_LIBRARY_DIRS} )
 message(STATUS "Boost INCLUDE DIR IS: " ${Boost_INCLUDE_DIRS})
@@ -290,7 +292,7 @@ if (NOT CMAKE_VERSION VERSION_LESS 2.8.12)
 endif ()
 
 if (NOT WIN32)
-target_link_libraries(opcuacore ${ADDITIONAL_LINK_LIBRARIES} opcuaprotocol ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+target_link_libraries(opcuacore ${ADDITIONAL_LINK_LIBRARIES} opcuaprotocol ${Boost_SYSTEM_LIBRARY})
 endif()
 
 target_include_directories(opcuacore PUBLIC $<INSTALL_INTERFACE:include>)
@@ -381,20 +383,20 @@ endif()
     # command line client
     ############################################################################
 
-    add_executable(opcuaclientapp
-    src/clientapp/opcua_main.cpp
-    src/clientapp/opcua_options.cpp
-    src/clientapp/opcua_options_attribute_ids.h
-    src/clientapp/opcua_options.h
-    )
+    #add_executable(opcuaclientapp
+    #src/clientapp/opcua_main.cpp
+    #src/clientapp/opcua_options.cpp
+    #src/clientapp/opcua_options_attribute_ids.h
+    #src/clientapp/opcua_options.h
+    #)
 
 
-    target_link_libraries(opcuaclientapp
-        ${ADDITIONAL_LINK_LIBRARIES}
-        ${Boost_PROGRAM_OPTIONS_LIBRARY}
-        opcuaprotocol
-        opcuacore
-    )
+    #target_link_libraries(opcuaclientapp
+    #    ${ADDITIONAL_LINK_LIBRARIES}
+    #    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    #    opcuaprotocol
+    #    opcuacore
+    #)
 
     if (NOT CMAKE_VERSION VERSION_LESS 2.8.12)
         target_compile_options(opcuaclient PUBLIC ${EXECUTABLE_CXX_FLAGS})
@@ -548,21 +550,21 @@ endif(BUILD_SERVER)
 ############################################################################
 
 if (BUILD_CLIENT)
-    add_executable(example_client
-    src/examples/example_client.cpp
-    )
+    #add_executable(example_client
+    #src/examples/example_client.cpp
+    #)
 
-    target_link_libraries(example_client
-        ${ADDITIONAL_LINK_LIBRARIES}
-        opcuaprotocol
-        opcuacore
-        opcuaclient
-        ${SSL_SUPPORT_LINK_LIBRARIES}
-    )
+    #target_link_libraries(example_client
+    #    ${ADDITIONAL_LINK_LIBRARIES}
+    #    opcuaprotocol
+    #    opcuacore
+    #    opcuaclient
+    #    ${SSL_SUPPORT_LINK_LIBRARIES}
+    #)
 
-    if (NOT CMAKE_VERSION VERSION_LESS 2.8.12)
-        target_compile_options(example_client PUBLIC ${EXECUTABLE_CXX_FLAGS})
-    endif ()
+    #if (NOT CMAKE_VERSION VERSION_LESS 2.8.12)
+    #    target_compile_options(example_client PUBLIC ${EXECUTABLE_CXX_FLAGS})
+    #endif ()
 
 endif (BUILD_CLIENT)
 

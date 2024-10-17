@@ -23,6 +23,9 @@
 
 #ifdef _WIN32
 #include <WinSock2.h>
+#ifndef MSG_NOSIGNAL
+#   define MSG_NOSIGNAL 0
+#endif
 #else
 #include <arpa/inet.h>
 #include <netinet/tcp.h>

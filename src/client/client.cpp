@@ -25,6 +25,8 @@
 #include <opc/ua/node.h>
 #include <opc/ua/protocol/string_utils.h>
 
+#include <cstdint>
+
 #ifdef SSL_SUPPORT_MBEDTLS
 #include <mbedtls/entropy.h>
 #include <mbedtls/ctr_drbg.h>
@@ -512,7 +514,7 @@ void UaClient::EncryptPassword(OpcUa::UserIdentifyToken &identity, const std::st
   LOG_DEBUG(Logger, "ua_client             | encrypting password RSA-OAEP");
   auto error2string = [](int err_no) -> std::string
   {
-    auto int_to_hex = [](u_int16_t i) -> std::string
+    auto int_to_hex = [](uint16_t i) -> std::string
     {
       std::stringstream stream;
       stream << std::setfill ('0') << std::setw(sizeof(i)*2) << std::hex << i;
@@ -560,20 +562,26 @@ void UaClient::EncryptPassword(OpcUa::UserIdentifyToken &identity, const std::st
 
         if (policyUri.find("Basic128Rsa15") != std::string::npos)
         {
-            printf("Rsa15\n");
+#ifdef _WIN32
+            mbedtls_rsa_set_padding(rsa, MBEDTLS_RSA_PKCS_V15, MBEDTLS_MD_NONE);
+#else
             rsa->padding = MBEDTLS_RSA_PKCS_V15;
             rsa->hash_id = 0;
+#endif
         }
         else
         {
-            printf("OAEP\n");
+#ifdef _WIN32
+            mbedtls_rsa_set_padding(rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA1);
+#else
             rsa->padding = MBEDTLS_RSA_PKCS_V21;
             rsa->hash_id = MBEDTLS_MD_SHA1;
+#endif
         }
 
         LOG_DEBUG(Logger, "ua_client             | generating the RSA encrypted value...");
 
-        unsigned char buff[rsa->len];
+        unsigned char buff[4096];
         std::string input = identity.UserName.Password;
         input += std::string(response.Parameters.ServerNonce.Data.begin(), response.Parameters.ServerNonce.Data.end());
         {
@@ -594,7 +602,7 @@ void UaClient::EncryptPassword(OpcUa::UserIdentifyToken &identity, const std::st
         }
         LOG_DEBUG(Logger, "ua_client             | encrypted password: {}", hex(std::vector<unsigned char>(buff, buff + sizeof(buff))));
 
-        identity.UserName.Password = std::string((const char*)buff, rsa->len);
+        identity.UserName.Password = std::string((const char*)buff, mbedtls_rsa_get_len(rsa));
 
         if (policyUri.find("Basic128Rsa15") != std::string::npos)
         {
