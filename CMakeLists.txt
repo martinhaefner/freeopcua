@@ -9,24 +9,24 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-#It seems Cmake does not set default bild type so we force it
+#It seems Cmake does not set default build type so we force it
 if( NOT CMAKE_BUILD_TYPE )
     set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug" FORCE )
 endif()
 
 project(freeopcua)
 
-if(WIN32)
-    set(BOOST_ROOT "c:/boost")
-    set(BOOST_INCLUDEDIR "c:/boost")
-    set(Boost_DEFAILED_FAILURE_MSG ON)
-    set(Boost_NO_SYSTEM_PATHS ON)
-    set(Boost_THREADAPI win32)
-    set(Boost_COMPILER "-vc141")
-    set(Boost_USE_STATIC_RUNTIME OFF)
-    set(Boost_USE_STATIC_LIBS ON)
-    set(Boost_DEBUG ON)
-endif()
+#if(WIN32)
+#    set(BOOST_ROOT "c:/boost")
+#    set(BOOST_INCLUDEDIR "c:/boost")
+#    set(Boost_DEFAILED_FAILURE_MSG ON)
+#    set(Boost_NO_SYSTEM_PATHS ON)
+#    set(Boost_THREADAPI win32)
+#    set(Boost_COMPILER "-vc141")
+#    set(Boost_USE_STATIC_RUNTIME OFF)
+#    set(Boost_USE_STATIC_LIBS ON)
+#    set(Boost_DEBUG ON)
+#endif()
 
 option(BUILD_CLIENT "Build Client" ON)
 option(BUILD_SERVER "Build Server" OFF)
