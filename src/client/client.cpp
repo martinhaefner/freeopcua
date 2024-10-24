@@ -562,22 +562,10 @@ void UaClient::EncryptPassword(OpcUa::UserIdentifyToken &identity, const std::st
 
         if (policyUri.find("Basic128Rsa15") != std::string::npos)
         {
-#ifdef _WIN32
             mbedtls_rsa_set_padding(rsa, MBEDTLS_RSA_PKCS_V15, MBEDTLS_MD_NONE);
-#else
-            rsa->padding = MBEDTLS_RSA_PKCS_V15;
-            rsa->hash_id = 0;
-#endif
         }
         else
-        {
-#ifdef _WIN32
             mbedtls_rsa_set_padding(rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA1);
-#else
-            rsa->padding = MBEDTLS_RSA_PKCS_V21;
-            rsa->hash_id = MBEDTLS_MD_SHA1;
-#endif
-        }
 
         LOG_DEBUG(Logger, "ua_client             | generating the RSA encrypted value...");
 
