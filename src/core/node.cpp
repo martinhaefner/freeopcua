@@ -100,6 +100,10 @@ std::vector<Variant> Node::CallMethod(const NodeId methodId, const std::vector<V
 
   std::vector<std::vector<Variant>> results = CallMethods(vec_methodId, vec_inputArguments);
 
+  // XXX hack...
+  if (results.size() == 0)
+    throw std::runtime_error("Missing response: 0x80010000");
+
   return results.front();
 }
 
