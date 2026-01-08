@@ -31,7 +31,7 @@ public:
 };
 
 
-  std::unique_ptr<RemoteConnection> Connect(const std::string & host, unsigned port, const Common::Logger::SharedPtr & logger);
+  std::unique_ptr<RemoteConnection> Connect(const std::string & host, unsigned port, const Common::Logger::SharedPtr & logger, int fd = -1);
 
 } // namespace OpcUa
 

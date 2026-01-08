@@ -125,9 +125,9 @@ private:
 
 }
 
-std::unique_ptr<OpcUa::RemoteConnection> OpcUa::Connect(const std::string & host, unsigned port, const Common::Logger::SharedPtr & logger)
+std::unique_ptr<OpcUa::RemoteConnection> OpcUa::Connect(const std::string & host, unsigned port, const Common::Logger::SharedPtr & logger, int fd)
 {
-  const int sock = ConnectToRemoteHost(host, port);
+  const int sock = fd >= 0 ? fd : ConnectToRemoteHost(host, port);
   return std::unique_ptr<RemoteConnection>(new BinaryConnection(sock, host, port, logger));
 }
 

@@ -108,11 +108,11 @@ public:
   // Like Disconnect() but without CloseSession() call, which is not possible on faulty connection anyway
   void Abort();
 
-  /// @brief  Connect to server and get endpoints
-  std::vector<EndpointDescription> GetServerEndpoints(const std::string & endpoint);
+  /// @brief  Connect to server and get endpoints. fd >= 0 for already connected TCP socket (must be in blocking mode)
+  std::vector<EndpointDescription> GetServerEndpoints(const std::string & endpoint, int fd = -1);
 
-  /// @brief  Connect to server and select one endpoint
-  EndpointDescription SelectEndpoint(const std::string &);
+  /// @brief  Connect to server and select one endpoint. fd >= 0 for already connected TCP socket (must be in blocking mode)
+  EndpointDescription SelectEndpoint(const std::string &, int fd = -1);
 
   /// @brief  get endpoints from server, assume we are already connected
   std::vector<EndpointDescription> GetServerEndpoints();

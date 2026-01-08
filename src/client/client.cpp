@@ -139,10 +139,11 @@ UaClient::UaClient(bool debug)
   KeepAlive.SetLogger(Logger);
 }
 
-std::vector<EndpointDescription> UaClient::GetServerEndpoints(const std::string & endpoint)
+std::vector<EndpointDescription> UaClient::GetServerEndpoints(const std::string & endpoint, int fd)
 {
   const Common::Uri serverUri(endpoint);
-  OpcUa::IOChannel::SharedPtr channel = OpcUa::Connect(serverUri.Host(), serverUri.Port(), Logger);
+
+  OpcUa::IOChannel::SharedPtr channel = OpcUa::Connect(serverUri.Host(), serverUri.Port(), Logger, fd);
 
   OpcUa::SecureConnectionParams params;
   //params.EndpointUrl = endpoint;
@@ -170,9 +171,9 @@ std::vector<EndpointDescription> UaClient::GetServerEndpoints()
   return endpoints;
 }
 
-EndpointDescription UaClient::SelectEndpoint(const std::string & endpoint)
+EndpointDescription UaClient::SelectEndpoint(const std::string & endpoint, int fd)
 {
-  std::vector<EndpointDescription> endpoints = GetServerEndpoints(endpoint);
+  std::vector<EndpointDescription> endpoints = GetServerEndpoints(endpoint, fd);
 
   LOG_DEBUG(Logger, "ua_client             | going through server endpoints and selected one we support");
 
